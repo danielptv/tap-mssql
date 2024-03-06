@@ -556,7 +556,7 @@ class mssqlStream(SQLStream):
 
             if start_val:
                 query = query.where(replication_key_col >= start_val)
-
+        
         if self.ABORT_AT_RECORD_COUNT is not None:
             # Limit record count to one greater than the abort threshold.
             # This ensures
@@ -564,6 +564,12 @@ class mssqlStream(SQLStream):
             # `Stream._sync_records()` if more records are available than can
             #  be processed.
             query = query.limit(self.ABORT_AT_RECORD_COUNT + 1)
+
+        filter_configs = self.config.get("filter", {})
+        if self.tap_stream_id in filter_configs:
+            query = query.where(sqlalchemy.text(filter_configs[self.tap_stream_id]["where"]))
+        elif "*" in filter_configs:
+            query = query.where(sqlalchemy.text(filter_configs["*"]["where"]))
 
         # # remove all below in final #
         # self.logger.info('\n')

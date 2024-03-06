@@ -99,6 +99,21 @@ class Tapmssql(SQLTap):
             description="SQLAlchemy URL Query options: driver, MultiSubnetFailover, TrustServerCertificate"
         ),
         th.Property(
+            "filter",
+            th.ObjectType(
+                additional_properties=th.CustomType(
+                    {
+                        "type": ["object", "null"],
+                        "properties": {
+                            "where": {"type": ["string"]},
+                        },
+                    }
+                )
+            ),
+            required=False,
+            description="Apply a custom WHERE condition per stream. Unlike the filter available in stream_maps, this will be evaluated BEFORE extracting the data.",  # noqa: E501
+        ),
+        th.Property(
             "batch_config",
             th.ObjectType(
                 th.Property(
